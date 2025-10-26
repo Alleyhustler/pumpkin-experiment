@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pumpkin Experiment | Seasonal Harvest Game</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Rowdies:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #000000;
+            --secondary: #333333;
+            --tertiary: #666666;
+            --dark: #FFFFFF;
+            --light: #000000;
+            --success: #00C853;
+            --warning: #FFAB00;
+            --danger: #D50000;
+        }
+    
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Rowdies", sans-serif;
+        }
+    
+        body {
+            background-color: var(--dark);
+            color: var(--light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+    
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+    
+        header {
+            padding: 1.1rem  0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+    
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+    
+        .logo span {
+            color: var(--primary);
+        }
+    
+        .logo img {
+            height: 90px;
+        }
+    
+        .connect-btn {
+            background: var(--primary);
+            color: var(--dark);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    
+        .connect-btn:hover {
+            background: var(--secondary);
+        }
+    
+        .connect-btn.connected {
+            background: var(--success);
+        }
+    
+        main {
+            flex: 1;
+            padding: 3rem 0;
+        }
+    
+        .hero {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+    
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+    
+        .hero p {
+            font-size: 1.25rem;
+            max-width: 600px;
+            margin: 0 auto;
+            color: var(--secondary);
+        }
+    
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+    
+        .stat-card {
+            background: var(--dark);
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+    
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+    
+        .stat-card h3 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+        }
+    
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+    
+        .pool-value {
+            color: var(--tertiary);
+        }
+    
+        .time-remaining {
+            color: var(--warning);
+        }
+    
+        .participants {
+            color: var(--primary);
+        }
+    
+        .voting-section {
+            background: var(--dark);
+            border-radius: 8px;
+            padding: 2rem;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            margin-bottom: 3rem;
+        }
+    
+        .voting-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+    
+        .voting-header h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+    
+        .voting-header p {
+            color: var(--secondary);
+        }
+    
+        .voting-options {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+    
+        .vote-btn {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 160px;
+        }
+    
+        .vote-btn span {
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            color: var(--secondary);
+        }
+    
+        .vote-btn.harvest {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+    
+        .vote-btn.harvest:hover, .vote-btn.harvest.active {
+            background-color: var(--danger);
+            color: var(--dark);
+        }
+    
+        .vote-btn.grow {
+            border-color: var(--success);
+            color: var(--success);
+        }
+    
+        .vote-btn.grow:hover, .vote-btn.grow.active {
+            background-color: var(--success);
+            color: var(--dark);
+        }
+    
+        .vote-progress {
+            background: rgba(0, 0, 0, 0.1);
+            height: 10px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+    
+        .vote-bar {
+            height: 100%;
+            width: 30%;
+            background: var(--primary);
+            transition: width 0.5s ease;
+        }
+    
+        .vote-percentages {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.875rem;
+            color: var(--secondary);
+        }
+    
+        .history-section {
+            background: var(--dark);
+            border-radius: 8px;
+            padding: 2rem;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+    
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+    
+        .history-header h2 {
+            font-size: 2rem;
+            color: var(--primary);
+        }
+    
+        .tabs {
+            display: flex;
+            gap: 1rem;
+        }
+    
+        .tab {
+            background: transparent;
+            color: var(--secondary);
+            border: none;
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+    
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+    
+        .history-content {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    
+        .history-content::-webkit-scrollbar {
+            width: 5px;
+        }
+    
+        .history-content::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+        }
+    
+        .history-content::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+    
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+    
+        .history-item:last-child {
+            border-bottom: none;
+        }
+    
+        .history-round {
+            font-weight: 600;
+            color: var(--primary);
+        }
+    
+        .history-result {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    
+        .history-result.harvest {
+            color: var(--danger);
+        }
+    
+        .history-result.grow {
+            color: var(--success);
+        }
+    
+        .history-amount {
+            font-weight: 600;
+            color: var(--primary);
+        }
+    
+        .history-address {
+            color: var(--secondary);
+            font-size: 0.875rem;
+            font-family: monospace;
+        }
+    
+        footer {
+            background: var(--dark);
+            padding: 2rem 0;
+            margin-top: auto;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+    
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+    
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+    
+        .footer-links a {
+            color: var(--secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+    
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+    
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+    
+        .social-links a {
+            color: var(--secondary);
+            font-size: 1.25rem;
+            transition: color 0.3s ease;
+        }
+    
+        .social-links a:hover {
+            color: var(--primary);
+        }
+    
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+    
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+    
+        .modal-content {
+            background: var(--dark);
+            border-radius: 8px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            position: relative;
+            transform: translateY(30px);
+            transition: transform 0.3s ease;
+        }
+    
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+    
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: transparent;
+            border: none;
+            color: var(--secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+    
+        .close-modal:hover {
+            color: var(--primary);
+        }
+    
+        .winner-modal-content {
+            text-align: center;
+        }
+    
+        .winner-modal-content h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+    
+        .winner-amount {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+    
+        .winner-address {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-family: monospace;
+            margin-bottom: 2rem;
+            word-break: break-all;
+            color: var(--primary);
+        }
+    
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            animation: confetti-fall 5s linear forwards;
+        }
+    
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+    
+        .wallet-modal-content h2 {
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            text-align: center;
+        }
+    
+        .wallet-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+    
+        .wallet-option {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+    
+        .wallet-option:hover {
+            background: rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+    
+        .wallet-option img {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 0.5rem;
+        }
+    
+        .wallet-option p {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+    
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+    
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+    
+        /* Media Queries */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+    
+            .voting-options {
+                flex-direction: column;
+                align-items: center;
+            }
+    
+            .vote-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+    
+            .history-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+    
+            .footer-content {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+        }
+    
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: var(--dark);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(30px);
+            transition: all 0.3s ease;
+        }
+    
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(0, 0, 0, 0.1);
+            padding: 0.25rem 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+        }
+    
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+    
+        .live-text {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary);
+        }
+
+        .next-pool-estimate {
+            color: var(--tertiary);
+            font-weight: bold;
+        }
+
+        .chart-container {
+            height: 200px;
+            margin-top: 1rem;
+        }
+
+        /* CSS for simulated particles background */
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
+    <script src="https://unpkg.com/@phantom-labs/inject-sdk@latest/dist/inject-sdk.min.js"></script>
+    <div class="particles-container" id="particles"></div>
+
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <img src="5840d93d8c25635bc8b769988caf2a0f.png" alt="Pumpkin Experiment Logo">
+                    <span>Pumpkin Experiment</span>
+                </div>
+                <div class="social-links">
+                    <a href="https://x.com/PumpkinExp_"><i class="fab fa-twitter"></i></a>
+                    <a href="https://t.me/pumpkinexperiment"><i class="fab fa-telegram"></i></a>
+                    <a href="https://pump.fun/profile/GC4R79RfKgL5qv77WCXpdGLDieeCsFvASbgRgxygSgic" class="buy-button">Buy $PKNEXP</a>
+                </div>
+                <button class="connect-btn" id="connectWalletBtn">
+                    <i class="fas fa-wallet"></i>
+                    Connect Wallet
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="hero">
+                <div class="live-indicator">
+                    <div class="live-dot"></div>
+                    <div class="live-text">Live</div>
+                </div>
+                <h1>Harvest Now or Grow Bigger</h1>
+                <p>Every hour the community decides: Harvest the pumpkin patch now, or let it grow for a bigger seasonal reward.</p>
+            </div>
+
+            <div class="stats-container">
+                <div class="stat-card pulse">
+                    <h3>Current Harvest</h3>
+                    <div class="pool-value value" id="poolValue">2.3 SOL</div>
+                    <div class="next-pool-estimate" id="estimatedPool">Estimated next: 5.22 SOL</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Time Until Next Vote</h3>
+                    <div class="time-remaining value" id="timeRemaining">10 MINUTES</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Active Farmers</h3>
+                    <div class="participants value" id="participants">5</div>
+                </div>
+            </div>
+
+            <div class="voting-section">
+                <div class="voting-header">
+                    <h2>Season #1 Voting</h2>
+                    <p>Cast your vote before the harvest time</p>
+                </div>
+                <div class="voting-options">
+                    <button class="vote-btn harvest" id="harvestBtn">
+                        HARVEST
+                        <span>Pick pumpkins now</span>
+                    </button>
+                    <button class="vote-btn grow" id="growBtn">
+                        GROW
+                        <span>Let patch expand</span>
+                    </button>
+                </div>
+                <div class="vote-progress">
+                    <div class="vote-bar" id="voteBar"></div>
+                </div>
+                <div class="vote-percentages">
+                    <div id="harvestPercentage">HARVEST: 30%</div>
+                    <div id="growPercentage">GROW: 70%</div>
+                </div>
+            </div>
+
+            <div class="history-section">
+                <div class="history-header">
+                    <h2>Harvest History</h2>
+                    <div class="tabs">
+                        <button class="tab active" data-tab="rounds">Seasons</button>
+                        <button class="tab" data-tab="winners">Winners</button>
+                        <button class="tab" data-tab="pools">Patch Growth</button>
+                    </div>
+                </div>
+                <div class="history-content" id="roundsHistory">
+                    <div class="history-item">
+                        <div class="history-round">Season #142 Example</div>
+                        <div class="history-result grow">
+                            <i class="fas fa-seedling"></i>
+                            GROW
+                        </div>
+                        <div class="history-amount">+6.57 SOL</div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-round">Season #442 Example</div>
+                        <div class="history-result grow">
+                            <i class="fas fa-seedling"></i>
+                            GROW
+                        </div>
+                        <div class="history-amount">+5.83 SOL</div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-round">Season #13 Example</div>
+                        <div class="history-result harvest">
+                            <i class="fas fa-pumpkin"></i>
+                            HARVEST
+                        </div>
+                        <div class="history-amount">75.25 SOL</div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-round">Season #1534 Example</div>
+                        <div class="history-result grow">
+                            <i class="fas fa-seedling"></i>
+                            GROW
+                        </div>
+                        <div class="history-amount">+4.27 SOL</div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-round">Season #65 Example</div>
+                        <div class="history-result grow">
+                            <i class="fas fa-seedling"></i>
+                            GROW
+                        </div>
+                        <div class="history-amount">+3.98 SOL</div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-round">Season #44 Example</div>
+                        <div class="history-result grow">
+                            <i class="fas fa-seedling"></i>
+                            GROW
+                        </div>
+                        <div class="history-amount">+4.12 SOL</div>
+                    </div>
+                </div>
+                <div class="history-content" id="winnersHistory" style="display: none;">
+                    <div class="history-item">
+                        <div class="history-round">Season #99</div>
+                        <div class="history-result harvest">
+                            <i class="fas fa-pumpkin"></i>
+                            HARVEST
+                        </div>
+                        <div>
+                            <div class="history-amount">75.25 SOL</div>
+                            <div class="history-address">HNm...4xP2</div>
+                        </div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-round">Season #133</div>
+                        <div class="history-result harvest">
+                            <i class="fas fa-pumpkin"></i>
+                            HARVEST
+                        </div>
+                        <div>
+                            <div class="history-amount">62.88 SOL</div>
+                            <div class="history-address">A9j...7tR3</div>
+                        </div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-round">Season #125</div>
+                        <div class="history-result harvest">
+                            <i class="fas fa-pumpkin"></i>
+                            HARVEST
+                        </div>
+                        <div>
+                            <div class="history-amount">57.31 SOL</div>
+                            <div class="history-address">K5p...8zQ9</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="history-content" id="poolsHistory" style="display: none;">
+                    <div class="chart-container" id="poolChart">
+                        <!-- Chart will be rendered here via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="#">How It Works</a>
+                    <a href="#">FAQ</a>
+                    <a href="#">Terms</a>
+                    <a href="#">Privacy</a>
+                </div>
+                <div class="social-links">
+                    <a href="https://x.com/PumpkinExp_"><i class="fab fa-twitter"></i></a>
+                    <a href="https://t.me/pumpkinexperiment"><i class="fab fa-telegram"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <div class="modal" id="winnerModal">
+        <div class="modal-content winner-modal-content">
+            <button class="close-modal" id="closeWinnerModal"><i class="fas fa-times"></i></button>
+            <h2>Great Harvest!</h2>
+            <div class="winner-amount">75.25 SOL</div>
+            <div class="winner-address">HNm4xP27qBK8xnTQzxV16fBjZ8x5dL4mJS9VMx4xP2</div>
+            <button class="connect-btn">
+                <i class="fas fa-external-link-alt"></i>
+                View on Solscan
+            </button>
+        </div>
+    </div>
+
+    <div class="modal" id="walletModal">
+        <div class="modal-content wallet-modal-content">
+            <button class="close-modal" id="closeWalletModal"><i class="fas fa-times"></i></button>
+            <h2>Connect Wallet</h2>
+            <div class="wallet-options">
+                <div class="wallet-option" id="phantomWallet">
+                    <img src="White Ghost_docs_nu.svg" alt="Phantom Wallet">
+                    <p>Phantom</p>
+                </div>
+                <div class="wallet-option">
+                    <img src="unnamed (1).png" alt="Solflare Wallet">
+                    <p>Solflare</p>
+                </div>
+                <div class="wallet-option">
+                    <img src="unnamed (3).png" alt="Backpack">
+                    <p>Backpack</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">Connected successfully!</div>
+
+    <!-- Chart.js for visualization -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script>
+    const connectWalletBtn = document.getElementById('connectWalletBtn');
+    const walletModal = document.getElementById('walletModal');
+    const closeWalletModal = document.getElementById('closeWalletModal');
+    const phantomWallet = document.getElementById('phantomWallet');
+    const winnerModal = document.getElementById('winnerModal');
+    const closeWinnerModal = document.getElementById('closeWinnerModal');
+    const notification = document.getElementById('notification');
+    const harvestBtn = document.getElementById('harvestBtn');
+    const growBtn = document.getElementById('growBtn');
+    const voteBar = document.getElementById('voteBar');
+    const harvestPercentage = document.getElementById('harvestPercentage');
+    const growPercentage = document.getElementById('growPercentage');
+    const tabs = document.querySelectorAll('.tab');
+    const historyContents = document.querySelectorAll('.history-content');
+    const timeRemaining = document.getElementById('timeRemaining');
+    const poolValue = document.getElementById('poolValue');
+    const participants = document.getElementById('participants');
+    const estimatedPool = document.getElementById('estimatedPool');
+    const particles = document.getElementById('particles');
+
+    // State
+    let walletConnected = false;
+    let userVoted = false;
+    let currentVotes = {
+    harvest: 103,
+    grow: 239
+    };
+    let totalPoolValue = 3.65;
+    let currentRound = 143;
+    let timeRemainingSeconds = 641; // 47 minutes 21 seconds
+    let participantsCount = 12;
+
+    // Create background particles
+    function createParticles() {
+    for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+
+        // Random position
+        const posX = Math.random() * window.innerWidth;
+        const posY = Math.random() * window.innerHeight;
+
+        // Random size
+        const size = Math.random() * 3 + 1;
+
+        // Apply styles
+        particle.style.left = `${posX}px`;
+        particle.style.top = `${posY}px`;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.opacity = Math.random() * 0.5 + 0.1;
+
+        // Random animation
+        const animationDuration = Math.random() * 50 + 30;
+        particle.style.animation = `particle-float ${animationDuration}s infinite linear`;
+
+        // Random delay
+        particle.style.animationDelay = `${Math.random() * 10}s`;
+
+        // Append to container
+        particles.appendChild(particle);
+    }
+    }
+
+    // Update vote percentages
+    function updateVotePercentages() {
+    const totalVotes = currentVotes.harvest + currentVotes.grow;
+    const harvestPercent = Math.round((currentVotes.harvest / totalVotes) * 100);
+    const growPercent = 100 - harvestPercent;
+
+    voteBar.style.width = `${harvestPercent}%`;
+    harvestPercentage.textContent = `HARVEST: ${harvestPercent}%`;
+    growPercentage.textContent = `GROW: ${growPercent}%`;
+    }
+
+    // Format time
+    function formatTime(seconds) {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+    }
+
+    // Update timer
+    function updateTimer() {
+    if (timeRemainingSeconds > 0) {
+        timeRemainingSeconds--;
+        timeRemaining.textContent = formatTime(timeRemainingSeconds);
+
+        // Simulate random farmer joins
+        if (Math.random() < 0.1) {
+        participantsCount += Math.floor(Math.random() * 3) + 1;
+        participants.textContent = participantsCount;
+        }
+
+        // Simulate patch growth
+        if (Math.random() < 0.05) {
+        totalPoolValue += Math.random() * 0.1;
+        poolValue.textContent = totalPoolValue.toFixed(2) + " SOL";
+        estimatedPool.textContent = "Estimated next: " + (totalPoolValue * 1.075).toFixed(2) + " SOL";
+        }
+    } else {
+        // Season ended, determine result
+        const harvestWon = currentVotes.harvest > currentVotes.grow;
+
+        if (harvestWon) {
+        showWinnerModal();
+        } else {
+        // GROW won, reset for next season
+        resetSeason();
+        showNotification("GROW won! The pumpkin patch expands.");
+        }
+    }
+    }
+
+    // Reset season for next hour
+    function resetSeason() {
+    currentRound++;
+    timeRemainingSeconds = 3600; // 1 hour
+    userVoted = false;
+    harvestBtn.classList.remove('active');
+    growBtn.classList.remove('active');
+
+    // Adjust votes for next season
+    currentVotes = {
+        harvest: Math.floor(Math.random() * 50) + 50,
+        grow: Math.floor(Math.random() * 150) + 150
+    };
+
+    updateVotePercentages();
+
+    // Update UI
+    document.querySelector('.voting-header h2').textContent = `Season #${currentRound} Voting`;
+    }
+
+    // Show notification
+    function showNotification(message) {
+    notification.textContent = message;
+    notification.classList.add('show');
+
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 3000);
+    }
+
+    // Generate confetti for winner modal
+    function generateConfetti() {
+    const modalContent = document.querySelector('.winner-modal-content');
+
+    for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.classList.add('confetti');
+
+        // Random position, color and delay
+        confetti.style.left = `${Math.random() * 100}%`;
+        confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+        confetti.style.animationDelay = `${Math.random() * 2}s`;
+
+        modalContent.appendChild(confetti);
+    }
+    }
+
+    // Show winner modal
+    function showWinnerModal() {
+    winnerModal.classList.add('active');
+    generateConfetti();
+
+    // Reset confetti when modal closes
+    closeWinnerModal.addEventListener('click', () => {
+        document.querySelectorAll('.confetti').forEach(el => el.remove());
+        resetSeason();
+    }, { once: true });
+    }
+
+    // Connect wallet function
+    function connectWallet() {
+    if (!window.solana || !window.solana.isPhantom) {
+        showNotification("Phantom Wallet is not installed. Please install it first.");
+        return;
+    }
+
+    walletModal.classList.add('active');
+    }
+
+    // Initialize pool chart
+    function initPoolChart() {
+    const ctx = document.createElement('canvas');
+    document.getElementById('poolChart').appendChild(ctx);
+
+    // Sample data for patch growth
+    const labels = Array.from({ length: 30 }, (_, i) => `#${currentRound - 30 + i}`);
+    const data = Array.from({ length: 30 }, (_, i) => {
+        // Simulate patch growth with occasional harvests
+        const baseValue = 20 + i * 1.5;
+        return i % 7 === 6 ? 15 : baseValue;
+    });
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+        labels: labels,
+        datasets: [{
+            label: 'Patch Size (SOL)',
+            data: data,
+            borderColor: '#00E0FF',
+            backgroundColor: 'rgba(0, 224, 255, 0.1)',
+            tension: 0.3,
+            fill: true
+        }]
+        },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+            display: false
+            }
+        },
+        scales: {
+            y: {
+            grid: {
+                color: 'rgba(255, 255, 255, 0.05)'
+            },
+            ticks: {
+                color: 'rgba(255, 255, 255, 0.7)'
+            }
+            },
+            x: {
+            grid: {
+                display: false
+            },
+            ticks: {
+                color: 'rgba(255, 255, 255, 0.7)',
+                maxRotation: 0,
+                autoSkip: true,
+                maxTicksLimit: 10
+            }
+            }
+        }
+        }
+    });
+    }
+
+    // Event Listeners
+    connectWalletBtn.addEventListener('click', connectWallet);
+
+    closeWalletModal.addEventListener('click', () => {
+    walletModal.classList.remove('active');
+    });
+
+    closeWinnerModal.addEventListener('click', () => {
+    winnerModal.classList.remove('active');
+    });
+
+    // Phantom wallet connection
+    phantomWallet.addEventListener('click', async () => {
+    try {
+        // Check if Phantom is installed
+        if (!window.solana || !window.solana.isPhantom) {
+        showNotification("Phantom Wallet is not installed. Please install it first.");
+        return;
+        }
+
+        // Connect to Phantom
+        const provider = window.solana;
+        await provider.connect();
+
+        // Update UI
+        walletConnected = true;
+        connectWalletBtn.innerHTML = `<i class="fas fa-wallet"></i> ${provider.publicKey.toString().slice(0, 4)}...${provider.publicKey.toString().slice(-4)}`;
+        connectWalletBtn.classList.add('connected');
+        walletModal.classList.remove('active');
+        showNotification("Wallet connected successfully!");
+    } catch (error) {
+        console.error("Error connecting to Phantom Wallet:", error);
+        showNotification("Failed to connect to Phantom Wallet.");
+    }
+    });
+
+    // Vote buttons
+    harvestBtn.addEventListener('click', () => {
+    if (!walletConnected) {
+        showNotification("Please connect your wallet first");
+        connectWallet();
+        return;
+    }
+
+    if (userVoted) {
+        showNotification("You've already voted in this season");
+        return;
+    }
+
+    harvestBtn.classList.add('active');
+    growBtn.classList.remove('active');
+    currentVotes.harvest++;
+    userVoted = true;
+    updateVotePercentages();
+    showNotification("Vote cast: HARVEST");
+    });
+
+    growBtn.addEventListener('click', () => {
+    if (!walletConnected) {
+        showNotification("Please connect your wallet first");
+        connectWallet();
+        return;
+    }
+
+    if (userVoted) {
+        showNotification("You've already voted in this season");
+        return;
+    }
+
+    growBtn.classList.add('active');
+    harvestBtn.classList.remove('active');
+    currentVotes.grow++;
+    userVoted = true;
+    updateVotePercentages();
+    showNotification("Vote cast: GROW");
+    });
+
+    // Tab switching
+    tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        // Remove active class from all tabs
+        tabs.forEach(t => t.classList.remove('active'));
+
+        // Add active class to clicked tab
+        tab.classList.add('active');
+
+        // Hide all content sections
+        historyContents.forEach(content => {
+        content.style.display = 'none';
+        });
+
+        // Show selected content
+        const targetContent = document.getElementById(`${tab.dataset.tab}History`);
+        targetContent.style.display = 'block';
+    });
+    });
+
+    // Initialize
+    window.addEventListener('DOMContentLoaded', () => {
+    updateVotePercentages();
+    setInterval(updateTimer, 1000);
+    createParticles();
+    initPoolChart();
+    });
+        
+    </script>
+</body>
+</html>
